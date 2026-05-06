@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MCQ Quality Coach Output",
+  "description": "Structured output schema for an audited MCQ. Designed for downstream LMS import.",
+  "type": "object",
+  "required": ["item", "audit", "rationales", "learner_feedback", "misconception_tags", "quality_status"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "learning_objective": { "type": "string" },
+        "audience": { "type": "string" },
+        "blooms_level": {
+          "type": "string",
+          "enum": ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"]
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["introductory", "moderate", "advanced", "expert"]
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["stem", "options", "correct_index"],
+      "properties": {
+        "stem": { "type": "string" },
+        "options": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 2
+        },
+        "correct_index": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "audit": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["criterion", "name", "status", "evidence"],
+        "properties": {
+          "criterion": { "type": "integer", "minimum": 1, "maximum": 19 },
+          "name": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["Pass", "Minor risk", "Flagged", "Not applicable"]
+          },
+          "evidence": { "type": "string" },
+          "fix": { "type": "string" }
+        }
+      }
+    },
+    "rationales": {
+      "type": "object",
+      "required": ["correct", "distractors"],
+      "properties": {
+        "correct": { "type": "string" },
+        "distractors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["index", "rationale"],
+            "properties": {
+              "index": { "type": "integer" },
+              "rationale": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "learner_feedback": {
+      "type": "object",
+      "required": ["correct", "incorrect"],
+      "properties": {
+        "correct": { "type": "string", "description": "Begins with 'Correct.'" },
+        "incorrect": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["index", "feedback"],
+            "properties": {
+              "index": { "type": "integer" },
+              "feedback": { "type": "string", "description": "Begins with 'Incorrect.' and includes the correct answer reference" }
+            }
+          }
+        }
+      }
+    },
+    "misconception_tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 4
+    },
+    "quality_status": {
+      "type": "string",
+      "enum": [
+        "Ready",
+        "Needs Minor Revision",
+        "Needs Major Revision",
+        "Reject and Rewrite",
+        "Requires SME verification"
+      ]
+    }
+  }
+}
