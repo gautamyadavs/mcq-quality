@@ -10,14 +10,15 @@ Provides TWO pipeline variants for pedagogical comparison:
      - Sycophancy risk (Reviewer can approve flawed items)
      - Revision regression risk (Reviser may introduce new issues)
 
-  2. run_gated_pipeline: Drafter → Validator → [conditional] Reviewer →
-     [conditional] Reviser. Only invokes downstream agents if upstream agents
-     find issues. Demonstrates:
-     - Lower latency on items the gate fires for
-     - Often comparable or better quality (skipped revisions can't introduce
-       regressions)
-     - The general principle: conditional invocation is almost always
-       better than unconditional sequential agent chains.
+  2. run_gated_pipeline: Drafter → Validator → Reviewer → [conditional] Reviser.
+     Always runs the first three steps (the Validator catches surface flaws,
+     the Reviewer catches semantic flaws; both are needed to know whether the
+     draft is acceptable). Skips the Reviser only when neither check found
+     anything to fix. Demonstrates:
+     - The right place to gate is on the step that has nothing to do, not on
+       a step whose checks are still needed.
+     - Skipping the Reviser when there is nothing to revise saves 1 LLM call
+       without compromising the quality signal.
 
 Both pipelines share the same agents and produce the same trace format. The
 OLI module asks students to run both on the same input and compare.
@@ -118,7 +119,22 @@ def _run_gated_from_draft(
     llm: LLMClient,
     use_mcp: bool = False,
 ) -> tuple[dict, PipelineTrace]:
-    """Gated pipeline starting from a pre-existing draft."""
+    """Gated pipeline starting from a pre-existing draft.
+
+    DESIGN NOTE: The Validator catches 12 of 19 IWFs (surface-level, pattern-
+    matchable). The Reviewer catches the other 7 (semantic flaws like
+    ambiguity, implausible distractors, convergence cues, multiple defensible
+    answers). These are COMPLEMENTARY: a clean Validator report says nothing
+    about whether the item has semantic flaws.
+
+    For that reason, the gated variant ALWAYS runs the Reviewer after the
+    Validator. The only step that can be conditionally skipped is the
+    Reviser, and only when both checks come back clean (Validator: no flags
+    or minor risks AND Reviewer: approves). When neither check found
+    anything to fix, there is genuinely nothing for the Reviser to do, so
+    the code skips it. This is the safe gating shortcut: it saves the Reviser
+    LLM call without skipping the semantic check.
+    """
     validate = _select_validator(use_mcp)
 
     trace = PipelineTrace(
@@ -128,7 +144,7 @@ def _run_gated_from_draft(
     )
     trace.add_step(draft_step)
 
-    # Step 2: Validate (via MCP if use_mcp=True)
+    # Step 2: Validate (via MCP if use_mcp=True). Always runs.
     val_out, step = validate(draft, step_index=2)
     trace.add_step(step)
 
@@ -139,31 +155,10 @@ def _run_gated_from_draft(
         r for r in val_out["validation_report"]["results"] if r["status"] == "Minor risk"
     ]
 
-    # Gate: skip review and revision entirely if validator is happy.
-    # NOTE: This is a deliberate teaching tradeoff. The deterministic validator
-    # only catches surface-level flaws (12 of 19 IWFs). Semantic flaws —
-    # ambiguity (#1), implausible distractors (#2), gratuitous information (#5),
-    # convergence (#7), logical clues (#8), unfocused stems (#13), multiple
-    # defensible answers (#18) — are NOT checked here. Skipping the gate is
-    # fast and saves cost on items that look surface-clean, but it can let
-    # semantic flaws through. The OLI module discussion should make this
-    # tradeoff explicit to students.
-    if not flagged and not minor:
-        trace.add_observation(
-            "GATING: Deterministic validator found no surface-level flags. "
-            "Skipping semantic reviewer and reviser. Saved 2 LLM calls vs. "
-            "naive pipeline. NOTE: the validator only catches 12 of 19 IWFs; "
-            "semantic flaws (#1 ambiguity, #2 implausible distractors, "
-            "#5 gratuitous information, #7 convergence cues, #8 logical clues, "
-            "#13 unfocused stems, #18 multiple defensible answers) are NOT "
-            "checked when this gate fires. The OLI module asks students to "
-            "weigh this tradeoff: is the latency win worth the semantic-quality "
-            "risk?"
-        )
-        trace.finalize(final_output=draft)
-        return draft, trace
-
-    # Step 3: Review (conditional — only if there's something to review)
+    # Step 3: Reviewer. ALWAYS runs in the canonical gated variant. The
+    # Validator's findings cover 12 of 19 IWFs; the Reviewer covers the other
+    # 7 semantic IWFs that pattern-matching cannot reach. A clean Validator
+    # report does not authorize skipping this step.
     review_out, step = reviewer_agent(
         draft, learning_objective, val_out["validation_report"], llm, step_index=3
     )
@@ -172,17 +167,24 @@ def _run_gated_from_draft(
         if note.startswith("PEDAGOGICAL OBSERVATION"):
             trace.add_observation(note)
 
-    # Gate: skip revision if reviewer approved AND validator only had minor risks
+    # Gate: skip the Reviser when both checks come back clean. This is the
+    # safe shortcut: nothing for the Reviser to fix means no LLM call needed.
+    # Minor risks alone (without flags) do not block the gate, since they
+    # are non-authoritative findings the Reviser could not act on confidently.
     reviewer_verdict = review_out.get("overall", "approve")
     if reviewer_verdict == "approve" and not flagged:
         trace.add_observation(
-            "GATING: Reviewer approved and validator had only minor risks. "
-            "Skipping reviser. Saved 1 LLM call vs. naive pipeline."
+            "GATING: Validator found no flags AND Reviewer approved. Both "
+            "surface-level (Validator) and semantic (Reviewer) checks are "
+            "clean, so the Reviser has nothing to fix. Skipping the Reviser "
+            "saves 1 LLM call vs. naive pipeline without compromising quality."
         )
         trace.finalize(final_output=draft)
         return draft, trace
 
-    # Step 4: Revise
+    # Step 4: Revise. Runs whenever there is something to fix (either
+    # surface-level findings from the Validator, or semantic concerns from
+    # the Reviewer, or both).
     revised, step = reviser_agent(
         draft, val_out["validation_report"], review_out, llm, step_index=4
     )

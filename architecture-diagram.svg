@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" font-family="Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" font-family="Arial, sans-serif">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#333333"/>
@@ -8,93 +8,106 @@
     </marker>
   </defs>
 
-  <!-- ============================================================ -->
-  <!-- Title removed: the embedded image's caption (set in OLI / the -->
-  <!-- module's imageCaption helper) does the title's work, per      -->
-  <!-- Mayer's redundancy principle. The freed headroom is now used  -->
-  <!-- for the use-mcp arrow's label.                                -->
-  <!-- ============================================================ -->
+  <!-- Diagram: hierarchical layout. Workflow contains MCP Server (visually nested); both reach the shared core. Skill is an independent sibling. -->
 
-  <!-- The use-mcp arrow's label, placed in the headroom above the columns,
-       offset toward the workflow column where the use-mcp flag is applied. -->
-  <text x="850" y="68" font-size="13" font-style="italic" text-anchor="middle" fill="#666666">--use-mcp: workflow calls validate_mcq through the protocol</text>
-
-  <!-- The use-mcp arrow itself: a clean diagonal dashed arrow from the
-       workflow's mcp_client.py box (at left edge, y=209) up-and-left to the
-       MCP server's validate_mcq box (at right edge, y=167). The diagonal
-       reads naturally as "workflow reaches into the protocol layer." -->
-  <line x1="836" y1="209" x2="754" y2="167" stroke="#666666" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrowDashed)"/>
+  <!-- Caption arrow label, in headroom above the diagram -->
+  <text x="780" y="30" font-size="16" font-style="italic" text-anchor="middle" fill="#666666">--use-mcp routes Validator through the MCP server (otherwise it imports the core directly)</text>
 
   <!-- ============================================================ -->
-  <!-- TOP ROW: Three paradigm columns                              -->
-  <!-- Subtitles tightened to fit within column width (340px).      -->
-  <!-- Workflow subtitle no longer enumerates the four roles; those -->
-  <!-- are visible elsewhere in the module and dropping them here   -->
-  <!-- gives the column the same parallel structure as the others.  -->
+  <!-- LEFT COLUMN: Skill (independent, sibling to workflow stack)   -->
   <!-- ============================================================ -->
+  <rect x="40" y="65" width="320" height="395" rx="12" ry="12" fill="#F5F2FF" stroke="#7C6BB8" stroke-width="2"/>
+  <text x="200" y="105" font-size="26" font-weight="bold" text-anchor="middle" fill="#3F3776">Skill</text>
+  <text x="200" y="135" font-size="16" font-style="italic" text-anchor="middle" fill="#3F3776">on-disk instructions for the AI</text>
 
-  <!-- Column 1: Skill (purple, on-disk artifact) -->
-  <rect x="40" y="80" width="340" height="180" rx="10" ry="10" fill="#F5F2FF" stroke="#7C6BB8" stroke-width="1.5"/>
-  <text x="210" y="112" font-size="20" font-weight="bold" text-anchor="middle" fill="#3F3776">Skill</text>
-  <text x="210" y="134" font-size="13" font-style="italic" text-anchor="middle" fill="#3F3776">on-disk instructions for the AI</text>
+  <!-- Audience tag -->
+  <rect x="60" y="155" width="280" height="38" rx="6" ry="6" fill="#FFFFFF" stroke="#7C6BB8" stroke-width="1.2"/>
+  <text x="200" y="180" font-size="14" text-anchor="middle" fill="#3F3776">used by AI clients</text>
 
-  <rect x="60" y="150" width="300" height="34" rx="5" ry="5" fill="#FFFFFF" stroke="#7C6BB8" stroke-width="1.2"/>
-  <text x="76" y="172" font-size="13" fill="#3F3776" font-family="Courier New, monospace">skill/SKILL.md</text>
+  <text x="200" y="220" font-size="13" font-style="italic" text-anchor="middle" fill="#666666">(Codex, Claude Code, Cursor)</text>
 
-  <rect x="60" y="192" width="300" height="34" rx="5" ry="5" fill="#FFFFFF" stroke="#7C6BB8" stroke-width="1.2"/>
-  <text x="76" y="214" font-size="13" fill="#3F3776" font-family="Courier New, monospace">skill/scripts/validate.py</text>
+  <!-- File contents -->
+  <rect x="60" y="245" width="280" height="42" rx="6" ry="6" fill="#FFFFFF" stroke="#7C6BB8" stroke-width="1.2"/>
+  <text x="76" y="271" font-size="15" fill="#3F3776" font-family="Courier New, monospace">skill/SKILL.md</text>
 
-  <text x="210" y="248" font-size="11" font-style="italic" text-anchor="middle" fill="#666666">used by AI clients (Codex, Claude Code, Cursor)</text>
+  <rect x="60" y="297" width="280" height="42" rx="6" ry="6" fill="#FFFFFF" stroke="#7C6BB8" stroke-width="1.2"/>
+  <text x="76" y="323" font-size="15" fill="#3F3776" font-family="Courier New, monospace">scripts/validate.py</text>
 
-  <!-- Column 2: MCP Server (blue, protocol-side) -->
-  <rect x="430" y="80" width="340" height="180" rx="10" ry="10" fill="#DDEAF1" stroke="#3F6F87" stroke-width="1.5"/>
-  <text x="600" y="112" font-size="20" font-weight="bold" text-anchor="middle" fill="#1F3F4F">MCP Server</text>
-  <text x="600" y="134" font-size="13" font-style="italic" text-anchor="middle" fill="#1F3F4F">live tools, persistent state</text>
+  <rect x="60" y="349" width="280" height="42" rx="6" ry="6" fill="#FFFFFF" stroke="#7C6BB8" stroke-width="1.2"/>
+  <text x="76" y="375" font-size="15" fill="#3F3776" font-family="Courier New, monospace">references/, assets/</text>
 
-  <rect x="450" y="150" width="300" height="34" rx="5" ry="5" fill="#FFFFFF" stroke="#3F6F87" stroke-width="1.2"/>
-  <text x="466" y="172" font-size="13" fill="#1F3F4F" font-family="Courier New, monospace">validate_mcq()</text>
+  <text x="200" y="420" font-size="13" font-style="italic" text-anchor="middle" fill="#666666">independent of the workflow</text>
+  <text x="200" y="438" font-size="13" font-style="italic" text-anchor="middle" fill="#666666">and MCP server stack</text>
 
-  <rect x="450" y="192" width="300" height="34" rx="5" ry="5" fill="#FFFFFF" stroke="#3F6F87" stroke-width="1.2"/>
-  <text x="466" y="214" font-size="13" fill="#1F3F4F" font-family="Courier New, monospace">bank_add_item, bank_list_items</text>
-
-  <text x="600" y="248" font-size="11" font-style="italic" text-anchor="middle" fill="#666666">separate process; persists ~/.mcq-quality/bank.db</text>
-
-  <!-- Column 3: Workflow (tan, agent-driven pipeline) -->
-  <rect x="820" y="80" width="340" height="180" rx="10" ry="10" fill="#F2EBDC" stroke="#A88845" stroke-width="1.5"/>
-  <text x="990" y="112" font-size="20" font-weight="bold" text-anchor="middle" fill="#5A4520">Workflow</text>
-  <text x="990" y="134" font-size="13" font-style="italic" text-anchor="middle" fill="#5A4520">multi-step pipeline</text>
-
-  <rect x="840" y="150" width="300" height="34" rx="5" ry="5" fill="#FFFFFF" stroke="#A88845" stroke-width="1.2"/>
-  <text x="856" y="172" font-size="13" fill="#5A4520" font-family="Courier New, monospace">compare_pipelines.py</text>
-
-  <rect x="840" y="192" width="300" height="34" rx="5" ry="5" fill="#FFFFFF" stroke="#A88845" stroke-width="1.2"/>
-  <text x="856" y="214" font-size="13" fill="#5A4520" font-family="Courier New, monospace">agents.py, mcp_client.py</text>
-
-  <text x="990" y="248" font-size="11" font-style="italic" text-anchor="middle" fill="#666666">orchestrates LLM and tool calls in sequence</text>
+  <!-- Skill arrow down to core -->
+  <line x1="200" y1="460" x2="200" y2="540" stroke="#333333" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="220" y="505" font-size="14" fill="#666666">imports core</text>
 
   <!-- ============================================================ -->
-  <!-- ARROWS: each paradigm imports the shared core (vertical)     -->
+  <!-- RIGHT NESTED STACK: Workflow contains MCP Server, both reach core -->
   <!-- ============================================================ -->
 
-  <!-- Skill -> core -->
-  <line x1="210" y1="265" x2="210" y2="305" stroke="#333333" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="225" y="290" font-size="11" fill="#666666">imports</text>
+  <!-- WORKFLOW outer box (tan, agent pipeline) -->
+  <rect x="400" y="65" width="760" height="395" rx="12" ry="12" fill="#F2EBDC" stroke="#A88845" stroke-width="2"/>
+  <text x="780" y="105" font-size="26" font-weight="bold" text-anchor="middle" fill="#5A4520">Workflow</text>
+  <text x="780" y="135" font-size="16" font-style="italic" text-anchor="middle" fill="#5A4520">multi-step pipeline (4 sequenced agent steps)</text>
 
-  <!-- MCP Server -> core -->
-  <line x1="600" y1="265" x2="600" y2="305" stroke="#333333" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="615" y="290" font-size="11" fill="#666666">imports</text>
+  <!-- Audience tag -->
+  <rect x="420" y="155" width="720" height="38" rx="6" ry="6" fill="#FFFFFF" stroke="#A88845" stroke-width="1.2"/>
+  <text x="780" y="180" font-size="14" text-anchor="middle" fill="#5A4520">used as a Python program (no AI client involved)</text>
 
-  <!-- Workflow -> core (default in-process path) -->
-  <line x1="990" y1="265" x2="990" y2="305" stroke="#333333" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="1005" y="290" font-size="11" fill="#666666">imports (default)</text>
+  <!-- Four workflow steps shown horizontally as a chain. Validator highlighted. -->
+  <rect x="420" y="220" width="160" height="46" rx="6" ry="6" fill="#FFFFFF" stroke="#A88845" stroke-width="1.4"/>
+  <text x="500" y="249" font-size="15" font-weight="bold" text-anchor="middle" fill="#5A4520">Drafter (LLM)</text>
+
+  <text x="590" y="249" font-size="18" text-anchor="middle" fill="#5A4520">→</text>
+
+  <rect x="600" y="220" width="160" height="46" rx="6" ry="6" fill="#FFFFFF" stroke="#A88845" stroke-width="3"/>
+  <text x="680" y="249" font-size="15" font-weight="bold" text-anchor="middle" fill="#5A4520">Validator</text>
+
+  <text x="770" y="249" font-size="18" text-anchor="middle" fill="#5A4520">→</text>
+
+  <rect x="780" y="220" width="160" height="46" rx="6" ry="6" fill="#FFFFFF" stroke="#A88845" stroke-width="1.4"/>
+  <text x="860" y="249" font-size="15" font-weight="bold" text-anchor="middle" fill="#5A4520">Reviewer (LLM)</text>
+
+  <text x="950" y="249" font-size="18" text-anchor="middle" fill="#5A4520">→</text>
+
+  <rect x="960" y="220" width="160" height="46" rx="6" ry="6" fill="#FFFFFF" stroke="#A88845" stroke-width="1.4"/>
+  <text x="1040" y="249" font-size="15" font-weight="bold" text-anchor="middle" fill="#5A4520">Reviser (LLM)</text>
+
+  <!-- MCP SERVER inset box (blue), nested inside workflow -->
+  <rect x="500" y="305" width="380" height="135" rx="10" ry="10" fill="#DDEAF1" stroke="#3F6F87" stroke-width="2"/>
+  <text x="690" y="338" font-size="20" font-weight="bold" text-anchor="middle" fill="#1F3F4F">MCP Server</text>
+  <text x="690" y="360" font-size="14" font-style="italic" text-anchor="middle" fill="#1F3F4F">live tools, persistent state</text>
+
+  <!-- MCP audience tag -->
+  <rect x="515" y="372" width="350" height="28" rx="4" ry="4" fill="#FFFFFF" stroke="#3F6F87" stroke-width="1"/>
+  <text x="690" y="391" font-size="12" text-anchor="middle" fill="#1F3F4F">used by AI clients AND by the workflow (with --use-mcp)</text>
+
+  <!-- MCP tools -->
+  <rect x="515" y="406" width="350" height="28" rx="4" ry="4" fill="#FFFFFF" stroke="#3F6F87" stroke-width="1"/>
+  <text x="525" y="425" font-size="13" fill="#1F3F4F" font-family="Courier New, monospace">validate_mcq, bank_add_item, bank_list_items, ...</text>
+
+  <!-- DASHED arrow: Validator step → MCP Server (use-mcp path) -->
+  <line x1="680" y1="267" x2="680" y2="302" stroke="#666666" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#arrowDashed)"/>
+  <text x="588" y="289" font-size="13" font-style="italic" fill="#666666">--use-mcp</text>
+
+  <!-- SOLID arrow: Validator step → core (default path), routes around MCP Server right edge -->
+  <path d="M 728 267 L 728 290 L 950 290 L 950 540" fill="none" stroke="#333333" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="965" y="380" font-size="13" fill="#666666">default:</text>
+  <text x="965" y="397" font-size="13" fill="#666666">imports core</text>
+  <text x="965" y="414" font-size="13" fill="#666666">in-process</text>
+
+  <!-- SOLID arrow: MCP Server → core (wrapping relationship) -->
+  <line x1="690" y1="442" x2="690" y2="540" stroke="#333333" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="705" y="495" font-size="13" fill="#666666">validate_mcq wraps core</text>
 
   <!-- ============================================================ -->
-  <!-- BOTTOM BAND: Shared core                                     -->
+  <!-- BOTTOM BAND: Shared core (full-width foundation)              -->
   <!-- ============================================================ -->
-
-  <rect x="40" y="305" width="1120" height="80" rx="10" ry="10" fill="#DDEAF1" stroke="#3F6F87" stroke-width="2"/>
-  <text x="600" y="335" font-size="18" font-weight="bold" text-anchor="middle" fill="#1F3F4F">Shared core: mcq_quality.core.validate_item()</text>
-  <text x="600" y="358" font-size="13" text-anchor="middle" fill="#1F3F4F">the 19-IWF validator: same function, called from all three layers</text>
-  <text x="600" y="378" font-size="11" font-style="italic" text-anchor="middle" fill="#666666">+ rubric.md (references), output_schema.json (also shared)</text>
+  <rect x="40" y="545" width="1120" height="120" rx="12" ry="12" fill="#DDEAF1" stroke="#3F6F87" stroke-width="2.5"/>
+  <text x="600" y="585" font-size="22" font-weight="bold" text-anchor="middle" fill="#1F3F4F">Shared core: mcq_quality.core.validate_item()</text>
+  <text x="600" y="615" font-size="16" text-anchor="middle" fill="#1F3F4F">the 19-IWF validator: same function, called from every layer</text>
+  <text x="600" y="645" font-size="13" font-style="italic" text-anchor="middle" fill="#666666">+ rubric.md (references), output_schema.json (also shared)</text>
 
 </svg>
